@@ -1,0 +1,121 @@
+{% extends 'dashboard/base.html' %} {% load static %} {% load crispy_forms_tags %} {% block content %}
+
+<style>
+    .containers {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        flex-wrap: wrap;
+        float: left;
+        margin-right: 2px;
+        overflow-x: hidden;
+        overflow-y: visible;
+    }
+    
+    .card {
+        border: 1px solid black;
+        margin: 7px;
+        padding: 10px 3px;
+        font-family: Arial, Helvetica, sans-serif;
+        /* border-corner-shape: scoop; */
+        border-radius: 30px;
+        height: fit-content;
+    }
+    
+    #tableassignment {
+        margin-left: 200px;
+        display: inline-table;
+        margin-top: 10px;
+        margin-right: 200px;
+    }
+    
+    .list-group {
+        background-color: aquamarine;
+        color: blue;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 20px;
+    }
+</style>
+
+
+<marquee behavior="scroll" direction="left" scrollamount="12" bgcolor="#CD5C5C">
+    <h3> Do Your HomeWork Before Due date</h3>
+</marquee>
+{% if not homework_done %}
+
+<table class="table table-striped table-bordered table-hover table-dark">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Due</th>
+            <th scope="col">Status</th>
+            <th scope="col">Delete</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for dest in homeworks %}
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{dest.subject}}</td>
+            <td>{{dest.title}}</td>
+            <td>{{dest.description}}</td>
+            <td>{{dest.due}}</td>
+
+            <td>
+                <a href="{% url 'update-homework' dest.id %}">
+                    <div class="form-check">
+                        {% if dest.is_finished == True %}
+                        <input class="form-check-input" type="checkbox" value="" checked> {% else %}
+                        <input class="form-check-input" type="checkbox" value=""> {% endif %}
+                        <label class="form-check-label text-light" for="flexCheckDefault">
+                                Mark as Completed
+                            </label>
+
+                    </div>
+                </a>
+            </td>
+            <td><a href="{% url 'delete-homework' dest.id %}"><i class="fa fa-trash fa-2x"></i></a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<h4>All homeworks created by You are completed!! Create to have more!!</h4>
+{% endif %} {% for th in homeworkbyteacher %}
+<div class="containers">
+    <div class="card my-5" style="width: 18rem;">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Subject :{{th.subject}}</li>
+            <li class="list-group-item">Given By: {{th.user.first_name}} {{th.user.last_name}}</li>
+            <li class="list-group-item"> Topic :{{th.title}}</li>
+            <li class="list-group-item"> HomeWork Description :{{th.description}}</li>
+            <li class="list-group-item" style="font-size: 20px; color: red;"> Due Date :{{th.due}}</li>
+            <li class="list-group-item"> Marks :{{th.marks}}</li>
+            <li class="list-group-item"> Upload file here :{{th.pdffile}}</li>
+        </ul>
+    </div>
+</div>
+{% endfor %}
+
+
+</div>
+
+<div class=" container" id="tableassignment">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Create Homework</legend>
+            {{form|crispy}}
+        </fieldset>
+        <div class="form-group">
+            <button href="" class="btn btn-outline-info" type="submit">
+                Create
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
